@@ -174,4 +174,86 @@ export class GooseClient {
   });
   }
 
+  requestCompound(
+    txb: TransactionBlock,
+    currentAddress: string,
+  ){
+    /**
+     * @description Get CompoundRequest Object
+     * @param txb TransactionBlock
+     * @param currentAddress Current Address of SuiClient instantiation
+     * @returns TransactionResult
+    */  
+ 
+    txb.setSenderIfNotSet(currentAddress);
+
+    return txb.moveCall({
+      target: `${PACKAGE_ID}::bond::request_compound`,
+      typeArguments: [],
+      arguments: [],
+    });
+  }
+
+  compoundToBucket(
+    txb: TransactionBlock,
+    currentAddress: string,
+    vault: string,
+    compoundRequest: string,
+    bp: string,
+    oracle: string,
+    bktTreasury: string,
+  ){
+    /**
+     * @description Compound To Bucket
+     * @param txb TransactionBlock     
+     * @param currentAddress Current Address of SuiClient instantiation
+     * @param vault Vault ID
+     * @param compoundRequest Compound Request object
+     * @param bp bucket
+     * @param oracle oracle
+     * @param bktTreasury Bkt Treasury
+     * @returns TransactionResult
+    */  
+ 
+     
+    txb.setSenderIfNotSet(currentAddress);
+
+    return txb.moveCall({
+      target: `${PACKAGE_ID}::bucket_tank::compound`,
+      typeArguments: [],
+      arguments: [txb.object(vault), txb.object(compoundRequest), txb.object(bp), txb.object(oracle), txb.object(bktTreasury), txb.object(SUI_CLOCK_OBJECT_ID)],
+    });
+  }
+
+  approveBond(
+    txb: TransactionBlock,
+    currentAddress: string,
+    nft: string,
+    compoundRequest: string,
+    vault: string,
+    manager: string,
+
+  ): TransactionResult{
+    /**
+     * @description approval of a bond - destroy compound request object and get GBUCK
+     * @param txb TransactionBlock
+     * @param currentAddress Current Address of SuiClient instantiation
+     * @param nft nft id
+     * @param compoundRequest Compound Request object
+     * @param vault Vault ID
+     * @param manager Manager Cap ID
+     * @returns TransactionResult
+    */  
+
+    txb.setSenderIfNotSet(currentAddress);
+
+    return txb.moveCall({
+      target: `${PACKAGE_ID}::bond::approve`,
+      typeArguments: [],
+      arguments: [txb.object(nft), txb.object(compoundRequest), txb.object(vault), txb.object(manager), txb.object(SUI_CLOCK_OBJECT_ID)],
+    });
+ 
+  }
+
+
 }
