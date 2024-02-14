@@ -96,5 +96,82 @@ export class GooseClient {
       arguments: [txb.object(SUI_CLOCK_OBJECT_ID), txb.object(compoundRequest), txb.object(depositRequest)],
     });
   }
-  
+
+  cancelRequest(
+    txb: TransactionBlock,
+    currentAddress: string,
+    nft: string,
+  ): TransactionResult {
+    /**
+     * @description get CompoundRequest + DepositRequest
+     * @param currentAddress Current Address of SuiClient instantiation
+     * @param nft nft id
+     * @returns TransactionResult
+     */
+
+    txb.setSenderIfNotSet(currentAddress);
+
+    return txb.moveCall({
+      target: `${PACKAGE_ID}::bond::request_cancel`,
+      typeArguments: [],
+      arguments: [txb.object(nft)],
+    });
+  }
+
+  withdrawFromTank(
+    txb: TransactionBlock,
+    currentAddress: string,
+    vault: string,
+    compoundRequest: string,
+    depositRequest: string,
+    bp: string,
+    oracle: string,
+    bktTreasury: string
+  ): TransactionResult {
+    /**
+     * @description Withdraw from bucket tank
+     * @param currentAddress Current Address of SuiClient instantiation
+     * @param vault Vault ID
+     * @param compoundRequest Compound request object
+     * @param depositRequest Deposit request object
+     * @param bp bucket
+     * @param oracle oracle
+     * @param bktTreasury Bkt Treasury
+     * @returns TransactionResult
+     */
+
+    txb.setSenderIfNotSet(currentAddress);
+
+    return txb.moveCall({
+      target: `${PACKAGE_ID}::bucket_tank::withdraw`,
+      typeArguments: [],
+      arguments: [txb.object(vault), txb.object(compoundRequest), txb.object(depositRequest), txb.object(bp), txb.object(oracle), txb.object(bktTreasury), txb.object(SUI_CLOCK_OBJECT_ID)],
+    });
+  }
+
+  cancelBond(
+    txb: TransactionBlock,
+    currentAddress: string,
+    compoundRequest: string,
+    depositRequest: string,
+    vault: string
+  ){
+    /**
+     * @description Destroy CompoundRequest + DepositRequest and get Buck Coin
+     * @param currentAddress Current Address of SuiClient instantiation
+     * @param compoundRequest compoundRequest object id
+     * @param depositRequest depositRequest object id
+     * @param vault Vault id
+     * @returns TransactionResult
+    */  
+ 
+  txb.setSenderIfNotSet(currentAddress);
+
+  return txb.moveCall({
+    target: `${PACKAGE_ID}::bond::cancel`,
+    typeArguments: [],
+    arguments: [txb.object(compoundRequest), txb.object(depositRequest), txb.object(vault)],
+  });
+  }
+
 }
