@@ -255,5 +255,59 @@ export class GooseClient {
  
   }
 
+  requestRedeem(
+    txb: TransactionBlock,
+    currentAddress: string,
+    coin: string,
+    compoundRequest: string,
+    vault: string,
+    manager: string,
+  ): TransactionResult{
+    /**
+     * @description Destroy CompoundRequest and get second CompoundRequest, WithdrawRequest and GBUCK
+     * @param txb TransactionBlock,
+     * @param currentAddress Current Address of SuiClient instantiation
+     * @param coin Coin Type
+     * @param compoundRequest Compound request Object ID
+     * @param vault Vault ID
+     * @param manager Manager ID
+     * @returns TransactionResult
+    */  
+
+    txb.setSenderIfNotSet(currentAddress);
+
+    return txb.moveCall({
+      target: `${PACKAGE_ID}::bond::request_redeem`,
+      typeArguments: [coin],
+      arguments: [txb.object(compoundRequest), txb.object(vault), txb.object(manager)],
+    });
+ 
+  }
+
+  redeemGbuck(
+    txb: TransactionBlock,
+    currentAddress: string,
+    compoundRequest: string,
+    depositRequest: string,
+    vault: string
+  ){
+    /**
+     * @description Withdraw BUCK
+     * @param txb TransactionBlock
+     * @param currentAddress Current Address of SuiClient instantiation
+     * @param compoundRequest Compound Request Object ID
+     * @param depositRequest Deposit Request Object ID
+     * @param vault Vault ID
+     * @returns TransactionResult
+    */  
+    txb.setSenderIfNotSet(currentAddress);
+
+    return txb.moveCall({
+      target: `${PACKAGE_ID}::bond::redeem`,
+      typeArguments: [],
+      arguments: [txb.object(compoundRequest), txb.object(depositRequest), txb.object(vault)],
+    });
+ 
+  }
 
 }
