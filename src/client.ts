@@ -1,5 +1,5 @@
 import { SuiClient } from "@mysten/sui.js/client";
-import { TransactionBlock, TransactionResult } from "@mysten/sui.js/transactions";
+import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { SUI_CLOCK_OBJECT_ID } from '@mysten/sui.js/utils';
 
 const PACKAGE_ID = "";
@@ -26,12 +26,12 @@ export class GooseClient {
     txb: TransactionBlock,
     currentAddress: string,
     coin: string
-  ): TransactionResult {
+  ) {
     /**
      * @description get CompoundRequest + DepositRequest
      * @param currentAddress Current Address of SuiClient instantiation
      * @param coin Coin Type
-     * @returns TransactionResult
+     * @return Transaction
      */
 
     txb.setSenderIfNotSet(currentAddress);
@@ -52,7 +52,7 @@ export class GooseClient {
     bp: string,
     oracle: string,
     bktTreasury: string,
-  ): TransactionResult {
+  ) {
     /**
      * @description deposit to tank
      * @param txb TransactionBlock
@@ -63,7 +63,7 @@ export class GooseClient {
      * @param bp bucket
      * @param oracle oracle
      * @param bktTreasury treasury
-     * @returns TransactionResult
+     * @return Transaction
      */
 
     txb.setSenderIfNotSet(currentAddress);
@@ -80,12 +80,12 @@ export class GooseClient {
     compoundRequest: string,
     depositRequest: string,
     currentAddress: string,
-  ): TransactionResult {
+  ) {
     /**
      * @description destroy CompoundRequest + DepositRequest and receive NFT
      * @param compoundRequest CompoundRequest object
      * @param depositRequest DepositRequest object
-     * @returns TransactionResult
+     * @return Transaction
      */
 
     txb.setSenderIfNotSet(currentAddress);
@@ -101,12 +101,12 @@ export class GooseClient {
     txb: TransactionBlock,
     currentAddress: string,
     nft: string,
-  ): TransactionResult {
+  ) {
     /**
      * @description get CompoundRequest + DepositRequest
      * @param currentAddress Current Address of SuiClient instantiation
      * @param nft nft id
-     * @returns TransactionResult
+     * @return Transaction
      */
 
     txb.setSenderIfNotSet(currentAddress);
@@ -127,7 +127,7 @@ export class GooseClient {
     bp: string,
     oracle: string,
     bktTreasury: string
-  ): TransactionResult {
+  ) {
     /**
      * @description Withdraw from bucket tank
      * @param currentAddress Current Address of SuiClient instantiation
@@ -137,7 +137,7 @@ export class GooseClient {
      * @param bp bucket
      * @param oracle oracle
      * @param bktTreasury Bkt Treasury
-     * @returns TransactionResult
+     * @return Transaction
      */
 
     txb.setSenderIfNotSet(currentAddress);
@@ -162,7 +162,7 @@ export class GooseClient {
      * @param compoundRequest compoundRequest object id
      * @param depositRequest depositRequest object id
      * @param vault Vault id
-     * @returns TransactionResult
+     * @return Transaction
     */  
  
   txb.setSenderIfNotSet(currentAddress);
@@ -182,7 +182,7 @@ export class GooseClient {
      * @description Get CompoundRequest Object
      * @param txb TransactionBlock
      * @param currentAddress Current Address of SuiClient instantiation
-     * @returns TransactionResult
+     * @return Transaction
     */  
  
     txb.setSenderIfNotSet(currentAddress);
@@ -212,7 +212,7 @@ export class GooseClient {
      * @param bp bucket
      * @param oracle oracle
      * @param bktTreasury Bkt Treasury
-     * @returns TransactionResult
+     * @return Transaction
     */  
  
      
@@ -233,7 +233,7 @@ export class GooseClient {
     vault: string,
     manager: string,
 
-  ): TransactionResult{
+  ){
     /**
      * @description approval of a bond - destroy compound request object and get GBUCK
      * @param txb TransactionBlock
@@ -242,7 +242,7 @@ export class GooseClient {
      * @param compoundRequest Compound Request object
      * @param vault Vault ID
      * @param manager Manager Cap ID
-     * @returns TransactionResult
+     * @return Transaction
     */  
 
     txb.setSenderIfNotSet(currentAddress);
@@ -262,7 +262,7 @@ export class GooseClient {
     compoundRequest: string,
     vault: string,
     manager: string,
-  ): TransactionResult{
+  ){
     /**
      * @description Destroy CompoundRequest and get second CompoundRequest, WithdrawRequest and GBUCK
      * @param txb TransactionBlock,
@@ -271,7 +271,7 @@ export class GooseClient {
      * @param compoundRequest Compound request Object ID
      * @param vault Vault ID
      * @param manager Manager ID
-     * @returns TransactionResult
+     * @return Transaction
     */  
 
     txb.setSenderIfNotSet(currentAddress);
@@ -298,7 +298,7 @@ export class GooseClient {
      * @param compoundRequest Compound Request Object ID
      * @param depositRequest Deposit Request Object ID
      * @param vault Vault ID
-     * @returns TransactionResult
+     * @return Transaction
     */  
     txb.setSenderIfNotSet(currentAddress);
 

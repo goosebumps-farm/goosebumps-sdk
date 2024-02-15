@@ -4,15 +4,15 @@
   "version": "0.1.0",
   "license": "Apache-2.0",
   "description": "Goose Bonds TypeScript SDK",
-  "type": "module",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "module": "./dist/esm/index.js",
+  "main": "./dist/cjs/index.js",
+  "types": "./dist/cjs/index.d.ts",
   "scripts": {
-    "clean": "rm -rf tsconfig.tsbuildinfo ./dist",
-    "build": "pnpm build:types && pnpm build:tsup",
-    "build:tsup": "tsup ./src/index.ts --format esm,cjs --sourcemap",
-    "build:types": "tsc --build",
+    "clean": "rm -rf dist/",
+    "build": "rm -rf dist/ && tsc && tsc -p tsconfig.cjs.json",
     "test": "vitest",
     "prettier:check": "prettier -c --ignore-unknown .",
     "prettier:fix": "prettier -w --ignore-unknown .",
