@@ -1,313 +1,249 @@
-import { SuiClient } from "@mysten/sui.js/client";
-import { TransactionBlock } from "@mysten/sui.js/transactions";
-import { SUI_CLOCK_OBJECT_ID } from '@mysten/sui.js/utils';
-
-const PACKAGE_ID = "";
+// import { SuiClient, getFullnodeUrl } from "@mysten/sui.js/client";
+import { TransactionBlock, TransactionArgument } from "@mysten/sui.js/transactions";
+import { PACKAGE, BUCKET_ORACLE_PACKAGE, POND, DUCK_MANAGER, BUCKET_PROTOCOL, BUCKET_ORACLE, BKT_TREASURY, SWITCHBOARD, SUPRA, CLOCK } from "./constants";
 
 export class GooseClient {
-  /**
-   * @description Goose Bonds SDK.
-   * @param client connection to fullnode
-   * @param currentAddress (optional) address of the current user (default: DUMMY_ADDRESS)
-   */
+	/**
+	 * @description SDK to interact with GooseBumps package.
+	 * @param client connection to fullnode
+	 */
 
-  private client: SuiClient;
-  public currentAddress;
+	// private client: SuiClient;
 
-  constructor(
-    client: SuiClient,
-    currentAddress: string,
-  ) {
-    this.client = client;
-    this.currentAddress = currentAddress;
-  }
+	// constructor(
+	//   public network: string,
+	// ) {
+	//   let url = "";
 
-  createRequest(
-    txb: TransactionBlock,
-    currentAddress: string,
-    coin: string
-  ) {
-    /**
-     * @description get CompoundRequest + DepositRequest
-     * @param currentAddress Current Address of SuiClient instantiation
-     * @param coin Coin Type
-     * @return Transaction
-     */
+	//   if (network == 'mainnet'
+	//     || network == 'testnet'
+	//     || network == 'devnet'
+	//     || network == 'localnet') {
+	//     url = getFullnodeUrl(network);
+	//   }
+	//   else {
+	//     url = network as string;
+	//   }
 
-    txb.setSenderIfNotSet(currentAddress);
+	//   this.client = new SuiClient({ url });
+	// }
+	
+	bump(tx: TransactionBlock, buck: TransactionArgument): [TransactionBlock, TransactionArgument] {
+		const [comp_req, dep_req] = tx.moveCall({
+				target: `${PACKAGE}::pond::request_bump`,
+				arguments: [buck],
+				typeArguments: [],
+			});
+			
+			tx.moveCall({
+				target: `${BUCKET_ORACLE_PACKAGE}::bucket_oracle::update_price`,
+				arguments: [
+					tx.object(BUCKET_ORACLE),
+					tx.object(CLOCK),
+					tx.object(SWITCHBOARD),
+					tx.object(SUPRA),
+					tx.pure(90), // pair id
+				],
+				typeArguments: [
+					"0x2::sui::SUI"
+				],
+			});
+			
+			tx.moveCall({
+				target: `${PACKAGE}::bucket_tank::deposit`,
+				arguments: [
+					tx.object(POND),
+					comp_req,
+					dep_req,
+					tx.object(BUCKET_PROTOCOL),
+					tx.object(BUCKET_ORACLE),
+					tx.object(BKT_TREASURY),
+					tx.object(CLOCK),
+				],
+				typeArguments: [],
+			});
+			
+			const [goose] = tx.moveCall({
+				target: `${PACKAGE}::pond::bump`,
+				arguments: [
+					tx.object(CLOCK),
+					comp_req,
+					dep_req,
+					tx.object(POND),
+				],
+				typeArguments: [],
+			});
 
-    return txb.moveCall({
-      target: `${PACKAGE_ID}::bond::request_create`,
-      typeArguments: [coin],
-      arguments: [],
-    });
-  }
+		return [tx, goose];
+	}
 
-  depositToBucketTank(
-    txb: TransactionBlock,
-    currentAddress: string,
-    vault: string,
-    compoundRequest: string,
-    depositRequest: string,
-    bp: string,
-    oracle: string,
-    bktTreasury: string,
-  ) {
-    /**
-     * @description deposit to tank
-     * @param txb TransactionBlock
-     * @param currentAddress Current Address of SuiClient instantiation
-     * @param vault vault you are depositing to
-     * @param compoundRequest CompoundRequest object
-     * @param depositRequest DepositRequest object
-     * @param bp bucket
-     * @param oracle oracle
-     * @param bktTreasury treasury
-     * @return Transaction
-     */
+	dump(tx: TransactionBlock, nft: TransactionArgument): [TransactionBlock, TransactionArgument] {
+		const [comp_req, wit_req] = tx.moveCall({
+				target: `${PACKAGE}::pond::request_dump`,
+				arguments: [nft],
+				typeArguments: [],
+			});
+			
+			tx.moveCall({
+				target: `${BUCKET_ORACLE_PACKAGE}::bucket_oracle::update_price`,
+				arguments: [
+					tx.object(BUCKET_ORACLE),
+					tx.object(CLOCK),
+					tx.object(SWITCHBOARD),
+					tx.object(SUPRA),
+					tx.pure(90),
+				],
+				typeArguments: [
+					"0x2::sui::SUI"
+				],
+			});
+			
+			tx.moveCall({
+				target: `${PACKAGE}::bucket_tank::withdraw`,
+				arguments: [
+					tx.object(POND),
+					comp_req,
+					wit_req,
+					tx.object(BUCKET_PROTOCOL), // protocol
+					tx.object(BUCKET_ORACLE), // oracle
+					tx.object(BKT_TREASURY), // treasury
+					tx.object(CLOCK),
+				],
+				typeArguments: [],
+			});
+			
+			const [buck] = tx.moveCall({
+				target: `${PACKAGE}::pond::dump`,
+				arguments: [
+					comp_req,
+					wit_req,
+					tx.object(POND),
+				],
+				typeArguments: [],
+			});
 
-    txb.setSenderIfNotSet(currentAddress);
+		return [tx, buck];
+	}
 
-    return txb.moveCall({
-      target: `${PACKAGE_ID}::bucket_tank::deposit`,
-      typeArguments: [],
-      arguments: [txb.object(vault), txb.object(compoundRequest), txb.object(depositRequest), txb.object(bp), txb.object(oracle), txb.object(bktTreasury), txb.object(SUI_CLOCK_OBJECT_ID)],
-    });
-  }
+	pump(tx: TransactionBlock, nft: TransactionArgument): [TransactionBlock, TransactionArgument] {
+		const [comp_req] = tx.moveCall({
+				target: `${PACKAGE}::pond::request_compound`,
+				arguments: [],
+				typeArguments: [],
+			});
+			
+			tx.moveCall({
+				target: `${BUCKET_ORACLE_PACKAGE}::bucket_oracle::update_price`,
+				arguments: [
+					tx.object(BUCKET_ORACLE),
+					tx.object(CLOCK),
+					tx.object(SWITCHBOARD),
+					tx.object(SUPRA),
+					tx.pure(90),
+				],
+				typeArguments: [
+					"0x2::sui::SUI"
+				],
+			});
+			
+			tx.moveCall({
+				target: `${PACKAGE}::bucket_tank::compound`,
+				arguments: [
+					tx.object(POND),
+					comp_req,
+					tx.object(BUCKET_PROTOCOL), // protocol
+					tx.object(BUCKET_ORACLE), // oracle
+					tx.object(BKT_TREASURY), // treasury
+					tx.object(CLOCK),
+				],
+				typeArguments: [],
+			});
+			
+			const [duck] = tx.moveCall({
+				target: `${PACKAGE}::pond::pump`,
+				arguments: [
+			nft,
+			comp_req,
+					tx.object(POND),
+					tx.object(DUCK_MANAGER),
+					tx.object(CLOCK),
+				],
+				typeArguments: [],
+			});
 
-  createBond(
-    txb: TransactionBlock,
-    compoundRequest: string,
-    depositRequest: string,
-    currentAddress: string,
-  ) {
-    /**
-     * @description destroy CompoundRequest + DepositRequest and receive NFT
-     * @param compoundRequest CompoundRequest object
-     * @param depositRequest DepositRequest object
-     * @return Transaction
-     */
+		return [tx, duck];
+	}
 
-    txb.setSenderIfNotSet(currentAddress);
+	redeem(tx: TransactionBlock, duck: TransactionArgument): [TransactionBlock, TransactionArgument] {
+		const [req] = tx.moveCall({
+				target: `${PACKAGE}::pond::request_compound`,
+				arguments: [],
+				typeArguments: [],
+			});
+			
+			tx.moveCall({
+				target: `${BUCKET_ORACLE_PACKAGE}::bucket_oracle::update_price`,
+				arguments: [
+					tx.object(BUCKET_ORACLE),
+					tx.object(CLOCK),
+					tx.object(SWITCHBOARD),
+					tx.object(SUPRA),
+					tx.pure(90),
+				],
+				typeArguments: [
+					"0x2::sui::SUI"
+				],
+			});
+			
+			tx.moveCall({
+				target: `${PACKAGE}::bucket_tank::compound`,
+				arguments: [
+					tx.object(POND),
+					req,
+					tx.object(BUCKET_PROTOCOL), // protocol
+					tx.object(BUCKET_ORACLE), // oracle
+					tx.object(BKT_TREASURY), // treasury
+					tx.object(CLOCK),
+				],
+				typeArguments: [],
+			});
+			
+			const [comp_req, wit_req] = tx.moveCall({
+				target: `${PACKAGE}::pond::request_redeem`,
+				arguments: [
+			duck,
+			req,
+					tx.object(POND),
+					tx.object(DUCK_MANAGER),
+				],
+				typeArguments: [],
+			});
+			
+			tx.moveCall({
+				target: `${PACKAGE}::bucket_tank::withdraw`,
+				arguments: [
+					tx.object(POND),
+					comp_req,
+					wit_req,
+					tx.object(BUCKET_PROTOCOL), // protocol
+					tx.object(BUCKET_ORACLE), // oracle
+					tx.object(BKT_TREASURY), // treasury
+					tx.object(CLOCK),
+				],
+				typeArguments: [],
+			});
+			
+			const [buck] = tx.moveCall({
+				target: `${PACKAGE}::pond::redeem`,
+				arguments: [
+					comp_req,
+					wit_req,
+					tx.object(POND),
+				],
+				typeArguments: [],
+			});
 
-    return txb.moveCall({
-      target: `${PACKAGE_ID}::bond::create`,
-      typeArguments: [],
-      arguments: [txb.object(SUI_CLOCK_OBJECT_ID), txb.object(compoundRequest), txb.object(depositRequest)],
-    });
-  }
-
-  cancelRequest(
-    txb: TransactionBlock,
-    currentAddress: string,
-    nft: string,
-  ) {
-    /**
-     * @description get CompoundRequest + DepositRequest
-     * @param currentAddress Current Address of SuiClient instantiation
-     * @param nft nft id
-     * @return Transaction
-     */
-
-    txb.setSenderIfNotSet(currentAddress);
-
-    return txb.moveCall({
-      target: `${PACKAGE_ID}::bond::request_cancel`,
-      typeArguments: [],
-      arguments: [txb.object(nft)],
-    });
-  }
-
-  withdrawFromTank(
-    txb: TransactionBlock,
-    currentAddress: string,
-    vault: string,
-    compoundRequest: string,
-    depositRequest: string,
-    bp: string,
-    oracle: string,
-    bktTreasury: string
-  ) {
-    /**
-     * @description Withdraw from bucket tank
-     * @param currentAddress Current Address of SuiClient instantiation
-     * @param vault Vault ID
-     * @param compoundRequest Compound request object
-     * @param depositRequest Deposit request object
-     * @param bp bucket
-     * @param oracle oracle
-     * @param bktTreasury Bkt Treasury
-     * @return Transaction
-     */
-
-    txb.setSenderIfNotSet(currentAddress);
-
-    return txb.moveCall({
-      target: `${PACKAGE_ID}::bucket_tank::withdraw`,
-      typeArguments: [],
-      arguments: [txb.object(vault), txb.object(compoundRequest), txb.object(depositRequest), txb.object(bp), txb.object(oracle), txb.object(bktTreasury), txb.object(SUI_CLOCK_OBJECT_ID)],
-    });
-  }
-
-  cancelBond(
-    txb: TransactionBlock,
-    currentAddress: string,
-    compoundRequest: string,
-    depositRequest: string,
-    vault: string
-  ){
-    /**
-     * @description Destroy CompoundRequest + DepositRequest and get Buck Coin
-     * @param currentAddress Current Address of SuiClient instantiation
-     * @param compoundRequest compoundRequest object id
-     * @param depositRequest depositRequest object id
-     * @param vault Vault id
-     * @return Transaction
-    */  
- 
-  txb.setSenderIfNotSet(currentAddress);
-
-  return txb.moveCall({
-    target: `${PACKAGE_ID}::bond::cancel`,
-    typeArguments: [],
-    arguments: [txb.object(compoundRequest), txb.object(depositRequest), txb.object(vault)],
-  });
-  }
-
-  requestCompound(
-    txb: TransactionBlock,
-    currentAddress: string,
-  ){
-    /**
-     * @description Get CompoundRequest Object
-     * @param txb TransactionBlock
-     * @param currentAddress Current Address of SuiClient instantiation
-     * @return Transaction
-    */  
- 
-    txb.setSenderIfNotSet(currentAddress);
-
-    return txb.moveCall({
-      target: `${PACKAGE_ID}::bond::request_compound`,
-      typeArguments: [],
-      arguments: [],
-    });
-  }
-
-  compoundToBucket(
-    txb: TransactionBlock,
-    currentAddress: string,
-    vault: string,
-    compoundRequest: string,
-    bp: string,
-    oracle: string,
-    bktTreasury: string,
-  ){
-    /**
-     * @description Compound To Bucket
-     * @param txb TransactionBlock     
-     * @param currentAddress Current Address of SuiClient instantiation
-     * @param vault Vault ID
-     * @param compoundRequest Compound Request object
-     * @param bp bucket
-     * @param oracle oracle
-     * @param bktTreasury Bkt Treasury
-     * @return Transaction
-    */  
- 
-     
-    txb.setSenderIfNotSet(currentAddress);
-
-    return txb.moveCall({
-      target: `${PACKAGE_ID}::bucket_tank::compound`,
-      typeArguments: [],
-      arguments: [txb.object(vault), txb.object(compoundRequest), txb.object(bp), txb.object(oracle), txb.object(bktTreasury), txb.object(SUI_CLOCK_OBJECT_ID)],
-    });
-  }
-
-  approveBond(
-    txb: TransactionBlock,
-    currentAddress: string,
-    nft: string,
-    compoundRequest: string,
-    vault: string,
-    manager: string,
-
-  ){
-    /**
-     * @description approval of a bond - destroy compound request object and get GBUCK
-     * @param txb TransactionBlock
-     * @param currentAddress Current Address of SuiClient instantiation
-     * @param nft nft id
-     * @param compoundRequest Compound Request object
-     * @param vault Vault ID
-     * @param manager Manager Cap ID
-     * @return Transaction
-    */  
-
-    txb.setSenderIfNotSet(currentAddress);
-
-    return txb.moveCall({
-      target: `${PACKAGE_ID}::bond::approve`,
-      typeArguments: [],
-      arguments: [txb.object(nft), txb.object(compoundRequest), txb.object(vault), txb.object(manager), txb.object(SUI_CLOCK_OBJECT_ID)],
-    });
- 
-  }
-
-  requestRedeem(
-    txb: TransactionBlock,
-    currentAddress: string,
-    coin: string,
-    compoundRequest: string,
-    vault: string,
-    manager: string,
-  ){
-    /**
-     * @description Destroy CompoundRequest and get second CompoundRequest, WithdrawRequest and GBUCK
-     * @param txb TransactionBlock,
-     * @param currentAddress Current Address of SuiClient instantiation
-     * @param coin Coin Type
-     * @param compoundRequest Compound request Object ID
-     * @param vault Vault ID
-     * @param manager Manager ID
-     * @return Transaction
-    */  
-
-    txb.setSenderIfNotSet(currentAddress);
-
-    return txb.moveCall({
-      target: `${PACKAGE_ID}::bond::request_redeem`,
-      typeArguments: [coin],
-      arguments: [txb.object(compoundRequest), txb.object(vault), txb.object(manager)],
-    });
- 
-  }
-
-  redeemGbuck(
-    txb: TransactionBlock,
-    currentAddress: string,
-    compoundRequest: string,
-    depositRequest: string,
-    vault: string
-  ){
-    /**
-     * @description Withdraw BUCK
-     * @param txb TransactionBlock
-     * @param currentAddress Current Address of SuiClient instantiation
-     * @param compoundRequest Compound Request Object ID
-     * @param depositRequest Deposit Request Object ID
-     * @param vault Vault ID
-     * @return Transaction
-    */  
-    txb.setSenderIfNotSet(currentAddress);
-
-    return txb.moveCall({
-      target: `${PACKAGE_ID}::bond::redeem`,
-      typeArguments: [],
-      arguments: [txb.object(compoundRequest), txb.object(depositRequest), txb.object(vault)],
-    });
- 
-  }
+		return [tx, buck];
+	}
 
 }
