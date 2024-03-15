@@ -1,9 +1,9 @@
 {
-  "name": "goosebonds-sdk",
-  "author": "Andrei <andreid.dev@gmail.com>",
+  "name": "goosebumps-sdk",
+  "author": "Andrei <andreid.dev@gmail.com>, Thouny <thouny@tuta.io>",
   "version": "0.1.0",
   "license": "Apache-2.0",
-  "description": "Goose Bonds TypeScript SDK",
+  "description": "Goose Bumps TypeScript SDK",
   "files": [
     "dist"
   ],
@@ -32,6 +32,8 @@
     "prettier": "^3.0.1",
     "tsup": "^7.2.0",
     "typescript": "^5.1.6",
-    "vitest": "^0.34.1"
+    "vitest": "^0.34.1",
+    "bun-types": "^1.0.25"
   }
 }
+
