@@ -1,6 +1,7 @@
-// import { SuiClient, getFullnodeUrl } from "@mysten/sui.js/client";
 import { TransactionBlock, TransactionArgument } from "@mysten/sui.js/transactions";
+import { SuiClient } from '@mysten/sui.js/client';
 import { PACKAGE, BUCKET_ORACLE_PACKAGE, POND, DUCK_MANAGER, BUCKET_PROTOCOL, BUCKET_ORACLE, BKT_TREASURY, SWITCHBOARD, SUPRA, CLOCK } from "./constants";
+import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui.js/utils";
 
 export class GooseClient {
 	/**
@@ -8,30 +9,17 @@ export class GooseClient {
 	 * @param client connection to fullnode
 	 */
 
-	// private client: SuiClient;
+	private client: SuiClient;
 
-	// constructor(
-	//   public network: string,
-	// ) {
-	//   let url = "";
-
-	//   if (network == 'mainnet'
-	//     || network == 'testnet'
-	//     || network == 'devnet'
-	//     || network == 'localnet') {
-	//     url = getFullnodeUrl(network);
-	//   }
-	//   else {
-	//     url = network as string;
-	//   }
-
-	//   this.client = new SuiClient({ url });
-	// }
-	
-	bump(tx: TransactionBlock, buck: TransactionArgument): [TransactionBlock, TransactionArgument] {
+	constructor(
+	  client: SuiClient,
+	) {
+	  this.client = client;
+	}
+	bump(tx: TransactionBlock, buck: TransactionArgument, address: string): [TransactionBlock, TransactionArgument] {
 		const [comp_req, dep_req] = tx.moveCall({
 				target: `${PACKAGE}::pond::request_bump`,
-				arguments: [buck],
+				arguments: [tx.object(buck)],
 				typeArguments: [],
 			});
 			
@@ -58,7 +46,7 @@ export class GooseClient {
 					tx.object(BUCKET_PROTOCOL),
 					tx.object(BUCKET_ORACLE),
 					tx.object(BKT_TREASURY),
-					tx.object(CLOCK),
+					tx.object(SUI_CLOCK_OBJECT_ID),
 				],
 				typeArguments: [],
 			});
@@ -66,18 +54,18 @@ export class GooseClient {
 			const [goose] = tx.moveCall({
 				target: `${PACKAGE}::pond::bump`,
 				arguments: [
-					tx.object(CLOCK),
+					tx.object(SUI_CLOCK_OBJECT_ID),
 					comp_req,
 					dep_req,
 					tx.object(POND),
 				],
 				typeArguments: [],
 			});
-
+		tx.transferObjects([goose], tx.object(address));
 		return [tx, goose];
 	}
 
-	dump(tx: TransactionBlock, nft: TransactionArgument): [TransactionBlock, TransactionArgument] {
+	dump(tx: TransactionBlock, nft: TransactionArgument, address: string): [TransactionBlock, TransactionArgument] {
 		const [comp_req, wit_req] = tx.moveCall({
 				target: `${PACKAGE}::pond::request_dump`,
 				arguments: [nft],
@@ -88,7 +76,7 @@ export class GooseClient {
 				target: `${BUCKET_ORACLE_PACKAGE}::bucket_oracle::update_price`,
 				arguments: [
 					tx.object(BUCKET_ORACLE),
-					tx.object(CLOCK),
+					tx.object(SUI_CLOCK_OBJECT_ID),
 					tx.object(SWITCHBOARD),
 					tx.object(SUPRA),
 					tx.pure(90),
@@ -107,7 +95,7 @@ export class GooseClient {
 					tx.object(BUCKET_PROTOCOL), // protocol
 					tx.object(BUCKET_ORACLE), // oracle
 					tx.object(BKT_TREASURY), // treasury
-					tx.object(CLOCK),
+					tx.object(SUI_CLOCK_OBJECT_ID),
 				],
 				typeArguments: [],
 			});
@@ -121,11 +109,11 @@ export class GooseClient {
 				],
 				typeArguments: [],
 			});
-
+		tx.transferObjects([buck], tx.object(address));
 		return [tx, buck];
 	}
 
-	pump(tx: TransactionBlock, nft: TransactionArgument): [TransactionBlock, TransactionArgument] {
+	pump(tx: TransactionBlock, nft: TransactionArgument, address: string): [TransactionBlock, TransactionArgument] {
 		const [comp_req] = tx.moveCall({
 				target: `${PACKAGE}::pond::request_compound`,
 				arguments: [],
@@ -136,7 +124,7 @@ export class GooseClient {
 				target: `${BUCKET_ORACLE_PACKAGE}::bucket_oracle::update_price`,
 				arguments: [
 					tx.object(BUCKET_ORACLE),
-					tx.object(CLOCK),
+					tx.object(SUI_CLOCK_OBJECT_ID),
 					tx.object(SWITCHBOARD),
 					tx.object(SUPRA),
 					tx.pure(90),
@@ -154,7 +142,7 @@ export class GooseClient {
 					tx.object(BUCKET_PROTOCOL), // protocol
 					tx.object(BUCKET_ORACLE), // oracle
 					tx.object(BKT_TREASURY), // treasury
-					tx.object(CLOCK),
+					tx.object(SUI_CLOCK_OBJECT_ID),
 				],
 				typeArguments: [],
 			});
@@ -166,15 +154,15 @@ export class GooseClient {
 			comp_req,
 					tx.object(POND),
 					tx.object(DUCK_MANAGER),
-					tx.object(CLOCK),
+					tx.object(SUI_CLOCK_OBJECT_ID),
 				],
 				typeArguments: [],
 			});
-
+		tx.transferObjects([duck], tx.object(address));
 		return [tx, duck];
 	}
 
-	redeem(tx: TransactionBlock, duck: TransactionArgument): [TransactionBlock, TransactionArgument] {
+	redeem(tx: TransactionBlock, duck: TransactionArgument, address: string): [TransactionBlock, TransactionArgument] {
 		const [req] = tx.moveCall({
 				target: `${PACKAGE}::pond::request_compound`,
 				arguments: [],
@@ -185,7 +173,7 @@ export class GooseClient {
 				target: `${BUCKET_ORACLE_PACKAGE}::bucket_oracle::update_price`,
 				arguments: [
 					tx.object(BUCKET_ORACLE),
-					tx.object(CLOCK),
+					tx.object(SUI_CLOCK_OBJECT_ID),
 					tx.object(SWITCHBOARD),
 					tx.object(SUPRA),
 					tx.pure(90),
@@ -203,7 +191,7 @@ export class GooseClient {
 					tx.object(BUCKET_PROTOCOL), // protocol
 					tx.object(BUCKET_ORACLE), // oracle
 					tx.object(BKT_TREASURY), // treasury
-					tx.object(CLOCK),
+					tx.object(SUI_CLOCK_OBJECT_ID),
 				],
 				typeArguments: [],
 			});
@@ -228,7 +216,7 @@ export class GooseClient {
 					tx.object(BUCKET_PROTOCOL), // protocol
 					tx.object(BUCKET_ORACLE), // oracle
 					tx.object(BKT_TREASURY), // treasury
-					tx.object(CLOCK),
+					tx.object(SUI_CLOCK_OBJECT_ID),
 				],
 				typeArguments: [],
 			});
@@ -242,7 +230,7 @@ export class GooseClient {
 				],
 				typeArguments: [],
 			});
-
+		tx.transferObjects([buck], tx.object(address));
 		return [tx, buck];
 	}
 
