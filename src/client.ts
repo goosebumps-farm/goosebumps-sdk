@@ -17,6 +17,12 @@ export class GooseClient {
 	  this.client = client;
 	}
 	bump(tx: TransactionBlock, buck: TransactionArgument, address: string): [TransactionBlock, TransactionArgument] {
+		/**
+	 	* @description Get egg by providing a buck object ID
+	 	* @param tx TransactionBlock instance
+		* @param buck buck object ID
+		* @param address Sui address where the egg goes to
+	 	*/
 		const [comp_req, dep_req] = tx.moveCall({
 				target: `${PACKAGE}::pond::request_bump`,
 				arguments: [tx.object(buck)],
@@ -66,6 +72,12 @@ export class GooseClient {
 	}
 
 	dump(tx: TransactionBlock, nft: TransactionArgument, address: string): [TransactionBlock, TransactionArgument] {
+		/**
+	 	* @description Get dumped goose by providing NFT object ID
+	 	* @param tx TransactionBlock instance
+		* @param nft Goose NFT object ID that has to be dumped.
+		* @param address Sui address where the dumped NFT goose goes to
+	 	*/
 		const [comp_req, wit_req] = tx.moveCall({
 				target: `${PACKAGE}::pond::request_dump`,
 				arguments: [nft],
@@ -114,6 +126,12 @@ export class GooseClient {
 	}
 
 	pump(tx: TransactionBlock, nft: TransactionArgument, address: string): [TransactionBlock, TransactionArgument] {
+		/**
+	 	* @description Get pumped goose by providing NFT object ID
+	 	* @param tx TransactionBlock instance
+		* @param nft Goose NFT object ID that has to be pumped.
+		* @param address Sui address where the pumped NFT goose goes to
+	 	*/
 		const [comp_req] = tx.moveCall({
 				target: `${PACKAGE}::pond::request_compound`,
 				arguments: [],
@@ -163,6 +181,12 @@ export class GooseClient {
 	}
 
 	redeem(tx: TransactionBlock, duck: TransactionArgument, address: string): [TransactionBlock, TransactionArgument] {
+		/**
+	 	* @description Redeem the initial deposited BUCK
+	 	* @param tx TransactionBlock instance
+		* @param nft duck object ID that has to be redeemed
+		* @param address Sui address where buck coins go to
+	 	*/
 		const [req] = tx.moveCall({
 				target: `${PACKAGE}::pond::request_compound`,
 				arguments: [],
