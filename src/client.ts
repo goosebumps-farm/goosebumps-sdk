@@ -1,6 +1,6 @@
 import { TransactionBlock, TransactionArgument } from "@mysten/sui.js/transactions";
 import { SuiClient } from '@mysten/sui.js/client';
-import { PACKAGE, BUCKET_ORACLE_PACKAGE, POND, DUCK_MANAGER, BUCKET_PROTOCOL, BUCKET_ORACLE, BKT_TREASURY, SWITCHBOARD, SUPRA, CLOCK } from "./constants";
+import { PACKAGE, BUCKET_ORACLE_PACKAGE, POND, DUCK_MANAGER, BUCKET_PROTOCOL, BUCKET_ORACLE, BKT_TREASURY, SWITCHBOARD, SUPRA } from "./constants";
 import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui.js/utils";
 
 export class GooseClient {
@@ -33,7 +33,7 @@ export class GooseClient {
 				target: `${BUCKET_ORACLE_PACKAGE}::bucket_oracle::update_price`,
 				arguments: [
 					tx.object(BUCKET_ORACLE),
-					tx.object(CLOCK),
+					tx.object(SUI_CLOCK_OBJECT_ID),
 					tx.object(SWITCHBOARD),
 					tx.object(SUPRA),
 					tx.pure(90), // pair id
@@ -80,7 +80,7 @@ export class GooseClient {
 	 	*/
 		const [comp_req, wit_req] = tx.moveCall({
 				target: `${PACKAGE}::pond::request_dump`,
-				arguments: [nft],
+				arguments: [tx.object(nft)],
 				typeArguments: [],
 			});
 			
@@ -168,7 +168,7 @@ export class GooseClient {
 			const [duck] = tx.moveCall({
 				target: `${PACKAGE}::pond::pump`,
 				arguments: [
-			nft,
+			tx.object(nft),
 			comp_req,
 					tx.object(POND),
 					tx.object(DUCK_MANAGER),
@@ -223,7 +223,7 @@ export class GooseClient {
 			const [comp_req, wit_req] = tx.moveCall({
 				target: `${PACKAGE}::pond::request_redeem`,
 				arguments: [
-			duck,
+			tx.object(duck),
 			req,
 					tx.object(POND),
 					tx.object(DUCK_MANAGER),
