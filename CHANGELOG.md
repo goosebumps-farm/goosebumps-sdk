@@ -1,5 +1,11 @@
 # goosebumps-sdk
 
+## 0.1.3
+
+### Patch Changes
+
+- Fix npmjs package
+
 ## 0.1.2
 
 ### Patch Changes
