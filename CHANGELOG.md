@@ -1,5 +1,11 @@
 # goosebumps-sdk
 
+## 0.1.4
+
+### Patch Changes
+
+- cda77a5: Release 0.1.4
+
 ## 0.1.3
 
 ### Patch Changes
