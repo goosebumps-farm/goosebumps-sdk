@@ -25,7 +25,7 @@ export class GooseClient {
 	 	*/
 		const [comp_req, dep_req] = tx.moveCall({
 				target: `${PACKAGE}::pond::request_bump`,
-				arguments: [tx.object(buck)],
+				arguments: [tx.object(buck as any)],
 				typeArguments: [],
 			});
 			
@@ -67,7 +67,7 @@ export class GooseClient {
 				],
 				typeArguments: [],
 			});
-		tx.transferObjects([goose], tx.object(address));
+		tx.transferObjects([goose], address as any);
 		return [tx, goose];
 	}
 
@@ -80,7 +80,7 @@ export class GooseClient {
 	 	*/
 		const [comp_req, wit_req] = tx.moveCall({
 				target: `${PACKAGE}::pond::request_dump`,
-				arguments: [tx.object(nft)],
+				arguments: [tx.object(nft as any)],
 				typeArguments: [],
 			});
 			
@@ -121,7 +121,7 @@ export class GooseClient {
 				],
 				typeArguments: [],
 			});
-		tx.transferObjects([buck], tx.object(address));
+		tx.transferObjects([buck], address as any);
 		return [tx, buck];
 	}
 
@@ -168,7 +168,7 @@ export class GooseClient {
 			const [duck] = tx.moveCall({
 				target: `${PACKAGE}::pond::pump`,
 				arguments: [
-			tx.object(nft),
+			tx.object(nft as any),
 			comp_req,
 					tx.object(POND),
 					tx.object(DUCK_MANAGER),
@@ -176,7 +176,7 @@ export class GooseClient {
 				],
 				typeArguments: [],
 			});
-		tx.transferObjects([duck], tx.object(address));
+		tx.transferObjects([duck], address as any);
 		return [tx, duck];
 	}
 
@@ -223,7 +223,7 @@ export class GooseClient {
 			const [comp_req, wit_req] = tx.moveCall({
 				target: `${PACKAGE}::pond::request_redeem`,
 				arguments: [
-			tx.object(duck),
+			tx.object(duck as any),
 			req,
 					tx.object(POND),
 					tx.object(DUCK_MANAGER),
@@ -254,7 +254,7 @@ export class GooseClient {
 				],
 				typeArguments: [],
 			});
-		tx.transferObjects([buck], tx.object(address));
+		tx.transferObjects([buck], address as any);
 		return [tx, buck];
 	}
 
