@@ -32,10 +32,10 @@ export class GooseClient {
 			const [goose] = tx.moveCall({
 				target: `${PACKAGE}::pond::bump`,
 				arguments: [
+					tx.object(POND),
 					tx.object(SUI_CLOCK_OBJECT_ID),
 					comp_req,
 					dep_req,
-					tx.object(POND),
 				],
 				typeArguments: [],
 			});
