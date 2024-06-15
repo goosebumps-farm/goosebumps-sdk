@@ -29,34 +29,6 @@ export class GooseClient {
 				typeArguments: [],
 			});
 			
-			tx.moveCall({
-				target: `${BUCKET_ORACLE_PACKAGE}::bucket_oracle::update_price`,
-				arguments: [
-					tx.object(BUCKET_ORACLE),
-					tx.object(SUI_CLOCK_OBJECT_ID),
-					tx.object(SWITCHBOARD),
-					tx.object(SUPRA),
-					tx.pure(90), // pair id
-				],
-				typeArguments: [
-					"0x2::sui::SUI"
-				],
-			});
-			
-			tx.moveCall({
-				target: `${PACKAGE}::bucket_tank::deposit`,
-				arguments: [
-					tx.object(POND),
-					comp_req,
-					dep_req,
-					tx.object(BUCKET_PROTOCOL),
-					tx.object(BUCKET_ORACLE),
-					tx.object(BKT_TREASURY),
-					tx.object(SUI_CLOCK_OBJECT_ID),
-				],
-				typeArguments: [],
-			});
-			
 			const [goose] = tx.moveCall({
 				target: `${PACKAGE}::pond::bump`,
 				arguments: [
